@@ -1,0 +1,4 @@
+---
+
+tesseract_dir: /opt/tesseract
+tessdata_dir: /opt/tessdata

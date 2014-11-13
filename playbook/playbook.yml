@@ -1,0 +1,67 @@
+---
+
+# OCR Box install
+
+- hosts: all
+  gather_facts: no
+  sudo: yes
+
+  tasks:
+    # Prepare for Tesseract
+    - name: Install apt requirements
+      apt: pkg={{ item }} update_cache=yes
+      with_items:
+        - git
+        - libleptonica-dev
+        - autoconf
+        - automake
+        - libtool
+        - libpng12-dev
+        - libjpeg62-dev
+        - zlib1g-dev
+        - libicu-dev
+        - libpango1.0-dev
+        - libcairo2-dev
+        - python-dev
+        - python-pip
+
+    - name: Install libtiff4-dev (separate because Ubuntu buggered up the packages)
+      apt: pkg={{ item }}
+      with_items:
+        - libtiff4-dev
+
+    # Install fonttools
+    - name: Install fonttools for Python
+      command: pip install fonttools==2.4
+
+    # Install Tesseract
+    - name: Clone Tesseract
+      git: repo=https://code.google.com/p/tesseract-ocr/ dest={{ tesseract_dir }} version=3.03-rc1
+
+    - name: Clone Tesseract Data
+      git: repo=https://code.google.com/p/tesseract-ocr.tessdata/ dest={{ tessdata_dir }}
+
+    - name: Make m4 directory in tesseract
+      file: path={{ tesseract_dir }}/m4 state=directory
+
+    - name: Autoconf Tesseract
+      command: ./autogen.sh chdir={{ tesseract_dir }}
+
+    - name: Configure Tesseract
+      command: ./configure chdir={{ tesseract_dir }}
+
+    - name: Make Tesseract
+      command: make -j4 chdir={{ tesseract_dir }}
+
+    - name: Install Tesseract
+      command: make install chdir={{ tesseract_dir }}
+
+    - name: Run ldconfig to setup Tesseract shared lib
+      command: ldconfig
+
+    # Install Tesseract training
+    - name: Make Tesseract-Training
+      command: make -j4 training chdir={{ tesseract_dir }}
+
+    - name: Install Training
+      command: make training-install chdir={{ tesseract_dir }}
