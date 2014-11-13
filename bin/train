@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# OCR Box
+# File: bin/train
+# Desc: automates much of the Tesseract training process
+#       this file attempts to automate training of Tesseract
+#       it takes a folder of fonts and automatically trains Tesseract on them
+
+# Ensure we use /opt/tessdata
+export TESSDATA_PREFIX=/opt
+
+# Our language
+LANG='eng'
+
+# Locate all the fonts
+FONTS_DIR=./fonts/
+FONTS=()
+
+echo "Looking for fonts in $FONTS_DIR..."
+for FILE in `ls $FONTS_DIR`
+do
+    # Strip extension
+    FONT=${FILE%.*}
+    FONTS+=($FONT)
+done
+
+
+# Ensure/reset data/font_properties
+cp files/font_properties data/font_properties
+
+# Loop the fonts, generate training box/image pairs
+for FONT in ${FONTS[@]}
+do
+    if [[ -f data/boxes/$LANG.$FONT.box ]]
+    then
+        echo "Box/image pair already generated for $FONT"
+    else
+        echo "Generating box/image for $FONT..."
+
+        # Convert font file (ArialNarrow-Bold) to name (Arial Narrow Bold)
+        FONT_NAME=`python bin/font_details.py $FONT name`
+
+        # Get the font properties
+        FONT_PROPERTIES=`python bin/font_details.py $FONT properties`
+        echo $FONT_PROPERTIES >> data/font_properties
+
+        # Generate the box/image pair
+        text2image \
+            --text=files/training_text \
+            --outputbase=data/boxes/$LANG.$FONT \
+            --font="$FONT_NAME" \
+            --fonts_dir=fonts/
+    fi
+done
+
+
+# Train Tesseract
+for FONT in ${FONTS[@]}
+do
+    if [[ -f data/trainers/$LANG.$FONT.tr ]]
+    then
+        echo "Training image already generated for $FONT"
+    else
+        echo "Training Tesseract on $FONT..."
+        tesseract \
+            data/boxes/$LANG.$FONT.tif \
+            data/trainers/$LANG.$FONT \
+            ../tessdata/configs/box.train.stderr
+    fi
+done
+
+
+# Build charset
+echo "Building unicharset for boxes..."
+unicharset_extractor -D data data/boxes/*.box
+
+
+# Create clustering data
+echo "Building clustering data (step 1)..."
+mftraining \
+    -F data/font_properties \
+    -U data/unicharset \
+    -O $LANG.unicharset \
+    -D data \
+    data/trainers/*.tr
+
+
+echo "Building clustering data (step 2)..."
+cntraining -D data data/trainers/*.tr
+
+
+echo "Combining results..."
+combine_tessdata data/$LANG.
+
+
+echo "data/$LANG.tessdata written"
+echo "Training complete!"
+exit 0

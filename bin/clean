@@ -1,0 +1,21 @@
+#!/bin/sh
+
+echo "Cleaning up..."
+
+# Font properties
+rm -f data/font_properties
+
+# Boxes
+rm -f data/boxes/*
+
+# Trainers
+rm -f data/trainers/*
+
+# Cluster data
+rm -f data/inttemp
+rm -f data/normproto
+rm -f data/pffmtable
+rm -f data/shapetable
+rm -f data/unicharse
+
+echo "Cleaned up"
