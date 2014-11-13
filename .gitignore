@@ -8,7 +8,17 @@ fonts/*
 !fonts/.keepme
 
 # Hide generated files
+data/font_properties
+data/inttemp
+data/normproto
+data/pffmtable
+data/shapetable
+data/unicharset
+
+# Hide boxes
 data/boxes/*
 !data/boxes/.keepme
+
+# Hide trainers
 data/trainers/*
 !data/trainers/.keepme
