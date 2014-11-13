@@ -25,8 +25,8 @@ do
 done
 
 
-# Ensure/reset data/font_properties
-cp files/font_properties data/font_properties
+# Ensure font_properties
+touch data/font_properties
 
 # Loop the fonts, generate training box/image pairs
 for FONT in ${FONTS[@]}
@@ -38,10 +38,10 @@ do
         echo "Generating box/image for $FONT..."
 
         # Convert font file (ArialNarrow-Bold) to name (Arial Narrow Bold)
-        FONT_NAME=`python bin/font_details.py $FONT name`
+        FONT_NAME=`python files/font_details.py $FONT name`
 
         # Get the font properties
-        FONT_PROPERTIES=`python bin/font_details.py $FONT properties`
+        FONT_PROPERTIES=`python files/font_details.py $FONT properties`
         echo $FONT_PROPERTIES >> data/font_properties
 
         # Generate the box/image pair
@@ -65,7 +65,7 @@ do
         tesseract \
             data/boxes/$LANG.$FONT.tif \
             data/trainers/$LANG.$FONT \
-            ../tessdata/configs/box.train.stderr
+            ../tesseract/tessdata/configs/box.train.stderr
     fi
 done
 
@@ -80,7 +80,7 @@ echo "Building clustering data (step 1)..."
 mftraining \
     -F data/font_properties \
     -U data/unicharset \
-    -O $LANG.unicharset \
+    -O data/$LANG.unicharset \
     -D data \
     data/trainers/*.tr
 
@@ -90,6 +90,10 @@ cntraining -D data data/trainers/*.tr
 
 
 echo "Combining results..."
+mv data/inttemp data/$LANG.inttemp
+mv data/normproto data/$LANG.normproto
+mv data/pffmtable data/$LANG.pffmtable
+mv data/shapetable data/$LANG.shapetable
 combine_tessdata data/$LANG.
 
 
