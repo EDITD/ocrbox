@@ -1,0 +1,13 @@
+# Basic
+.DS_Store
+*.pyc
+
+# Hide fonts
+fonts/*
+!fonts/.keepme
+
+# Hide generated files
+data/boxes/*
+!data/boxes/.keepme
+data/trainers/*
+!data/trainers/.keepme
