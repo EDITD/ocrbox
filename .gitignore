@@ -1,6 +1,7 @@
 # Basic
 .DS_Store
 *.pyc
+.vagrant
 
 # Hide fonts
 fonts/*
