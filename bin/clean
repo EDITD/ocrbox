@@ -12,10 +12,10 @@ rm -f data/boxes/*
 rm -f data/trainers/*
 
 # Cluster data
-rm -f data/inttemp
-rm -f data/normproto
-rm -f data/pffmtable
-rm -f data/shapetable
-rm -f data/unicharse
+rm -f data/*inttemp
+rm -f data/*normproto
+rm -f data/*pffmtable
+rm -f data/*shapetable
+rm -f data/*unicharset
 
 echo "Cleaned up"
