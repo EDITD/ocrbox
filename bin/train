@@ -89,6 +89,11 @@ echo "Building clustering data (step 2)..."
 cntraining -D data data/trainers/*.tr
 
 
+echo "Building wordlists..."
+wordlist2dawg files/dictionary_words $LANG.word-dawg
+wordlist2dawg files/frequent_words $LANG.freq-dawg
+
+
 echo "Combining results..."
 mv data/inttemp data/$LANG.inttemp
 mv data/normproto data/$LANG.normproto
