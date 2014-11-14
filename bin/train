@@ -90,8 +90,8 @@ cntraining -D data data/trainers/*.tr
 
 
 echo "Building wordlists..."
-wordlist2dawg files/dictionary_words $LANG.word-dawg
-wordlist2dawg files/frequent_words $LANG.freq-dawg
+wordlist2dawg files/dictionary_words data/$LANG.word-dawg data/$LANG.unicharset
+wordlist2dawg files/frequent_words data/$LANG.freq-dawg data/$LANG.unicharset
 
 
 echo "Combining results..."
