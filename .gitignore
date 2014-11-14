@@ -9,11 +9,13 @@ fonts/*
 
 # Hide generated files
 data/font_properties
-data/inttemp
-data/normproto
-data/pffmtable
-data/shapetable
-data/unicharset
+data/*inttemp
+data/*normproto
+data/*pffmtable
+data/*shapetable
+data/*unicharset
+data/*traineddata
+data/*-dawg
 
 # Hide boxes
 data/boxes/*
